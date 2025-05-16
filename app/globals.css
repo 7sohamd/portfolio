@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #1e2124;
+  --foreground: #ffffff;
+  --accent: #c778dd;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-fira-code), monospace;
+  cursor: none; /* Hide default cursor */
+}
+
+/* Custom cursor styles */
+.custom-cursor {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(199, 120, 221, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0.1s;
+  transform-origin: center;
+}
+
+.custom-cursor-dot {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background-color: rgba(199, 120, 221, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.1s;
+}
+
+.cursor-hover {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(199, 120, 221, 0.1);
+  border-color: rgba(199, 120, 221, 0.8);
+}
+
+.cursor-clicked {
+  transform: scale(0.8);
+  background-color: rgba(199, 120, 221, 0.2);
+}
+
+/* Interactive elements hover effects */
+button,
+a,
+.draggable {
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+button:hover,
+a:hover {
+  transform: translateY(-2px);
+}
+
+.draggable {
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.draggable:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.draggable::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(199, 120, 221, 0) 0%, rgba(199, 120, 221, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.draggable:hover::after {
+  opacity: 1;
+}
+
+/* Project cards hover effect */
+#projects .draggable {
+  overflow: hidden;
+}
+
+#projects .draggable::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(199, 120, 221, 0.1), transparent);
+  transition: left 0.7s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#projects .draggable:hover::before {
+  left: 100%;
+}
+
+/* Section title styles */
+.section-title {
+  position: relative;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-left: 16px;
+  width: 40%;
+  height: 1px;
+  background-image: url("/images/line-stroke.png");
+  background-repeat: repeat-x;
+}
+
+.quote-mark {
+  font-family: serif;
+  font-size: 4rem;
+  line-height: 0;
+  position: relative;
+  top: 1.5rem;
+}
+
+/* Draggable styles */
+.dragging {
+  opacity: 0.9;
+}
+
+/* Glitch effect for hero text */
+@keyframes glitch {
+  0% {
+    text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em 0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  14% {
+    text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em 0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  15% {
+    text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  49% {
+    text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  50% {
+    text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  99% {
+    text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+  100% {
+    text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0
+      rgba(0, 0, 255, 0.75);
+  }
+}
+
+.hero-text:hover span {
+  animation: glitch 1.5s infinite;
+}
+
+/* Toast animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Drag and drop styles */
+[draggable="true"] {
+  cursor: grab !important;
+  user-select: none;
+}
+
+[draggable="true"]:active {
+  cursor: grabbing !important;
+}
+
+/* Add a pulsing border animation to the drop zone */
+@keyframes pulse-border {
+  0% {
+    border-color: rgba(199, 120, 221, 0.2);
+  }
+  50% {
+    border-color: rgba(199, 120, 221, 0.5);
+  }
+  100% {
+    border-color: rgba(199, 120, 221, 0.2);
+  }
+}
+
+.border-dashed {
+  animation: pulse-border 2s infinite;
+}
+
+/* Button styles */
+.bg-purple-500 {
+  background-color: #c778dd;
+}
+
+.bg-purple-600 {
+  background-color: #b85dcf;
+}
+
+.hover\:bg-purple-600:hover {
+  background-color: #b85dcf;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
