@@ -5,24 +5,22 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Github, FileCode, Linkedin, MessageSquare, ChevronDown, ChevronUp } from "lucide-react"
+import { Github, FileCode, Linkedin, MessageSquare, ChevronDown, ChevronUp, Search } from "lucide-react"
 import { Draggable } from "@/components/draggable"
 import { InteractiveBackground } from "@/components/interactive-background"
-import { CustomCursor } from "@/components/custom-cursor"
 import { Toast } from "@/components/toast-notification"
+import dynamic from 'next/dynamic';
+import { DropZone } from "@/components/drop-zone";
+import { CustomCursor } from "@/components/custom-cursor";
 
 // Array of witty messages to show when dragging
-const wittyMessages = [
+const wittyMessages: string[] = [
   "Feel free to arrange according to you, consider this your playground!",
   "Drag and drop like you're rearranging your desk... but less effort!",
   "Go ahead, make yourself at home. Move things around!",
   "This portfolio is like IKEA furniture - some assembly required!",
   "Dragging elements: the adult version of playing with building blocks.",
   "Who needs interior designers when you can arrange this portfolio yourself?",
-  "Warning: Rearranging elements may lead to a sense of accomplishment.",
-  "Pro tip: You can move these around. Not that you needed a pro tip for that...",
-  "Yes, that element is draggable. So is almost everything else. Have fun!",
-  "Think of this as your personal tech sandbox. No shoes required.",
 ]
 
 // Array of compliment messages (for ratings 5-10)
@@ -101,7 +99,23 @@ export default function Home() {
   const [showRating, setShowRating] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [expandDropZone, setExpandDropZone] = useState(false)
+  const [skillDropped, setSkillDropped] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [showSearchResult, setShowSearchResult] = useState(false)
+  const [showSearchResponse, setShowSearchResponse] = useState(false)
   const dropZoneRef = useRef<HTMLDivElement>(null)
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev)
+  }
+
+  const toggleSearchResponse = () => {
+    setShowSearchResponse((prev) => !prev);
+
+    // Play music when the button is clicked
+    const audio = new Audio('/music/boom.mp3');
+    audio.play();
+  }
 
   // Function to show a random witty message when dragging starts
   const handleDragStart = () => {
@@ -249,6 +263,10 @@ export default function Home() {
     }
   }
 
+  const handleSkillDropped = () => {
+    setSkillDropped(true)
+  }
+
   return (
     <div className="min-h-screen bg-[#1e2124] text-foreground font-mono relative">
       {/* Interactive Background */}
@@ -273,7 +291,7 @@ export default function Home() {
       {/* Navigation */}
       <header className="container mx-auto py-6 px-4 relative z-10">
         <nav className="flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2 text-white">
+          <Link href="https://www.youtube.com/watch?v=xvFZjo5PgG0" className="flex items-center gap-2 text-white">
             <span className="font-bold flex items-center">
               <Image src="/images/logo.png" alt="Logo" width={20} height={20} className="mr-2" />
               Soham
@@ -292,7 +310,30 @@ export default function Home() {
             <Link href="#contacts" className="text-gray-400 hover:text-white transition">
               #contacts
             </Link>
-            <div className="border border-gray-700 rounded px-2 py-1 text-sm text-gray-400">EN ▼</div>
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="text-gray-400 hover:text-white text-sm flex items-center gap-1 transition"
+              >
+                EN
+                {isDropdownOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              <div
+                className={`absolute top-full mt-2 bg-[#232529] border border-gray-700 rounded shadow-lg transition-all duration-300 ${
+                  isDropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"
+                }`}
+              >
+                <ul className="py-2">
+                  <li className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 cursor-pointer">
+                    Seriously?
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </nav>
       </header>
@@ -307,13 +348,31 @@ export default function Home() {
               <span className="text-purple-400">Full Stack Developer</span>
             </h1>
             <p className="text-gray-400">
-              He crafts responsive websites where technologies
+              and makes flop horror games using unity, btw..
               <br />
-              meet creativity
+              <span className="flex items-center gap-2">
+                Hey google can I get a job?
+                <button
+                  onClick={toggleSearchResponse}
+                  className="text-purple-400 hover:text-purple-300 transition"
+                  aria-label="Search"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </span>
             </p>
-            <button className="bg-transparent hover:bg-purple-900/30 text-white border border-purple-500 px-4 py-2 transition">
-              Contact me!!
-            </button>
+            {showSearchResponse && (
+              <p className="text-gray-400 mt-2">
+                Google said,<span className="text-purple-400"> ‘Try Bing, I don’t handle lost causes.’</span>
+              </p>
+            )}
+            <a
+              href="/Modern_Simple_ATS_Friendly_LateX_resume.pdf"
+              download="Soham_Dey_CV.pdf"
+              className="bg-transparent hover:bg-purple-900/30 text-white border border-purple-500 px-4 py-2 transition mt-4 inline-block"
+            >
+              Download CV
+            </a>
           </Draggable>
           <div className="relative">
             <Draggable id="hero-image" className="relative z-10" onDragStart={handleDragStart}>
@@ -337,6 +396,8 @@ export default function Home() {
             </Draggable>
           </div>
         </section>
+
+        
 
         {/* Quote Section - styled exactly as in reference */}
         <section className="py-16 flex justify-center">
@@ -641,163 +702,130 @@ export default function Home() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Drop Zone - always takes full width when expanded */}
-            <div className={`relative ${expandDropZone ? "md:col-span-2" : ""}`}>
-              {/* Drop Zone content remains the same */}
-              <div
-                ref={dropZoneRef}
-                className={`bg-[#232529] border border-gray-700 border-dashed p-6 ${
-                  expandDropZone ? "min-h-[400px]" : "h-full"
-                } flex flex-col items-center justify-center cursor-default relative transition-all duration-300`}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleRearrangeDrop}
+            <div className="relative">
+              <DropZone
+                className="bg-[#232529] border border-gray-700 p-6 h-full flex items-center justify-center cursor-default"
+                onItemDropped={handleSkillDropped}
               >
-                {showRating ? (
-                  // Rating display state
-                  <div className="text-center w-full">
-                    <p className="text-purple-400 font-bold text-xl mb-2">{ratingMessage}</p>
-                    <div className="mt-6 opacity-70">
-                      <span className="text-3xl">
-                        {ratingMessage.includes("1/10") ||
-                        ratingMessage.includes("2/10") ||
-                        ratingMessage.includes("3/10") ||
-                        ratingMessage.includes("4/10")
-                          ? "😬"
-                          : "🏆"}
-                      </span>
-                    </div>
-                    <button
-                      onClick={resetDropZone}
-                      className="mt-6 text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1 rounded transition"
-                    >
-                      Try Again
-                    </button>
-                  </div>
-                ) : droppedSkills.length > 0 ? (
-                  // Skills dropped state
-                  <div className="w-full h-full relative">
-                    {/* Dropped skills that can be rearranged */}
-                    {droppedSkills.map((skill, index) => (
-                      <div
-                        key={`dropped-${index}`}
-                        draggable="true"
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData("text/plain", `dropped-${index}`)
-                          handleDragStart()
-                        }}
-                        onDragEnd={handleDragEnd}
-                        className="bg-[#2a2d31] border border-gray-700 p-4 absolute cursor-grab active:cursor-grabbing"
-                        style={{
-                          left: `${skill.position.x}px`,
-                          top: `${skill.position.y}px`,
-                          zIndex: 10 + index,
-                          width: "200px",
-                        }}
-                      >
-                        <div className="border border-gray-700 inline-block px-4 py-1 mb-2">
-                          <h3 className="font-bold">{skill.title}</h3>
-                        </div>
-                        <div className="pt-0">
-                          <ul className="text-gray-400 space-y-1">
-                            {skill.items.map((item, itemIndex) => (
-                              <li key={itemIndex}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        {/* Drag handle */}
-                        <div className="absolute top-2 right-2 w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M5 9h14M5 15h14"></path>
-                          </svg>
-                        </div>
+                <div className="text-center">
+                  {!skillDropped ? (
+                    <>
+                      <p className="text-gray-400 mb-2">I left this space empty on purpose</p>
+                      <p className="text-purple-400 font-bold">so that you can play around</p>
+                      <p className="text-gray-400 mt-2">
+                        or maybe just a <span className="line-through">skill</span> space issue
+                      </p>
+                      <div className="mt-4 opacity-50">
+                        <span className="text-2xl">🎮</span>
                       </div>
-                    ))}
-
-                    {/* Submit button */}
-                    <div className="absolute bottom-4 right-4">
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-400 mb-2">
+                        <span className="text-purple-400 font-bold text-xl">{ratingMessage}</span>
+                      </p>
+                      <div className="mt-6 opacity-70">
+                        <span className="text-3xl">🏆</span>
+                      </div>
                       <button
-                        onClick={generateRating}
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"
+                        onClick={() => setSkillDropped(false)}
+                        className="mt-6 text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1 rounded transition"
                       >
-                        Rate My Arrangement
+                        Reset
                       </button>
-                    </div>
-                  </div>
-                ) : (
-                  // Empty drop zone state - only show text if not dragging
-                  <div
-                    className={`text-center w-full ${
-                      isDragging ? "opacity-0" : "opacity-100"
-                    } transition-opacity duration-300`}
-                  >
-                    <p className="text-gray-400 mb-2">I left this space empty on purpose</p>
-                    <p className="text-purple-400 font-bold">so that you can play around</p>
-                    <p className="text-gray-400 mt-2">Drop any skill here and arrange them as you like!</p>
-                    <p className="text-gray-400 text-sm mt-1 italic">(Spoiler: I'll judge your design skills)</p>
-                    <div className="mt-4 opacity-50">
-                      <span className="text-2xl">🎮</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Skills grid - ALWAYS visible, not conditional anymore */}
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${expandDropZone ? "md:col-span-2" : ""}`}>
-              {/* Skill boxes */}
-              {skillsData.map((skill) => (
-                <div
-                  key={skill.id}
-                  draggable="true"
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData("text/plain", skill.id)
-                    handleDragStart()
-                  }}
-                  onDragEnd={handleDragEnd}
-                  className="bg-[#232529] border border-gray-700 cursor-grab active:cursor-grabbing relative"
-                >
-                  <div className="border border-gray-700 inline-block px-4 py-1 m-2">
-                    <h3 className="font-bold">{skill.title}</h3>
-                  </div>
-                  <div className="p-4 pt-0">
-                    <ul className="text-gray-400 space-y-1">
-                      {skill.items.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  {/* Drag handle */}
-                  <div className="absolute top-2 right-2 w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 9h14M5 15h14"></path>
-                    </svg>
-                  </div>
+                    </>
+                  )}
                 </div>
-              ))}
+              </DropZone>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Draggable
+                id="skills-languages"
+                className="bg-[#232529] border border-gray-700"
+                onDragStart={handleDragStart}
+              >
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">Languages</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>Java Python</li>
+                    <li>JavaScript C++ SQL</li>
+                  </ul>
+                </div>
+              </Draggable>
+              <Draggable id="skills-web" className="bg-[#232529] border border-gray-700" onDragStart={handleDragStart}>
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">Web</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>React.js Next.js</li>
+                    <li>Node.js Express.js</li>
+                    <li>MongoDB</li>
+                  </ul>
+                </div>
+              </Draggable>
+              <Draggable
+                id="skills-mobile"
+                className="bg-[#232529] border border-gray-700"
+                onDragStart={handleDragStart}
+              >
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">Mobile</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>Flutter</li>
+                    <li>React Native</li>
+                  </ul>
+                </div>
+              </Draggable>
+              <Draggable
+                id="skills-devops"
+                className="bg-[#232529] border border-gray-700"
+                onDragStart={handleDragStart}
+              >
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">DevOps</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>Docker AWS</li>
+                    <li>Git CI/CD</li>
+                  </ul>
+                </div>
+              </Draggable>
+              <Draggable id="skills-uiux" className="bg-[#232529] border border-gray-700" onDragStart={handleDragStart}>
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">UI/UX</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>Figma</li>
+                    <li>Adobe XD</li>
+                  </ul>
+                </div>
+              </Draggable>
+              <Draggable
+                id="skills-others"
+                className="bg-[#232529] border border-gray-700"
+                onDragStart={handleDragStart}
+              >
+                <div className="border border-gray-700 inline-block px-4 py-1 m-2">
+                  <h3 className="font-bold">Others</h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <ul className="text-gray-400 space-y-1">
+                    <li>Firebase REST APIs</li>
+                    <li>PyTorch Blender Unity</li>
+                    <li>Ethical Hacking</li>
+                  </ul>
+                </div>
+              </Draggable>
             </div>
           </div>
         </section>
-
         {/* About Me Section */}
         <section id="about-me" className="py-16 relative">
           <h2 className="text-2xl font-bold section-title mb-8">

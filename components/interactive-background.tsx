@@ -70,19 +70,15 @@ export function InteractiveBackground() {
 
     // Initialize particles
     const initParticles = () => {
-      particles.current = []
-      const particleCount = Math.floor((canvas.width * canvas.height) / 20000) // Adjust density
-
-      for (let i = 0; i < particleCount; i++) {
-        particles.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 2 + 0.5,
-          speedX: Math.random() * 0.5 - 0.25,
-          speedY: Math.random() * 0.5 - 0.25,
-          color: Math.random() > 0.8 ? "#c778dd" : "#444444",
-        })
-      }
+      const particleCount = 200; // Increased from a lower value (e.g., 100) to 200
+      particles.current = Array.from({ length: particleCount }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 1, // Particle size between 1 and 4
+        speedX: Math.random() * 0.5 - 0.25,
+        speedY: Math.random() * 0.5 - 0.25,
+        color: `rgba(199, 120, 221, 1)`, // Full visibility
+      }))
     }
 
     // Initialize tech icons
@@ -100,7 +96,7 @@ export function InteractiveBackground() {
           rotation: Math.random() * 360,
           rotationSpeed: (Math.random() * 0.5 - 0.25) * 0.5,
           icon: techIcons[Math.floor(Math.random() * techIcons.length)],
-          opacity: Math.random() * 0.2 + 0.05, // Low opacity between 0.05-0.25
+          opacity: Math.random() * 0.2 + 0.3, // Increased opacity range
         })
       }
     }
@@ -137,11 +133,11 @@ export function InteractiveBackground() {
       particles.current.forEach((particle, index) => {
         // Draw particle
         ctx.fillStyle = particle.color
-        ctx.globalAlpha = 0.6
+        ctx.globalAlpha = 0.3; // Increased from 0.8 to 1 for full visibility
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
         ctx.fill()
-        ctx.globalAlpha = 1
+        ctx.globalAlpha = 0.3
 
         // Update position
         particle.x += particle.speedX
@@ -161,7 +157,7 @@ export function InteractiveBackground() {
         if (distance < 120) {
           // Draw line to mouse
           ctx.beginPath()
-          ctx.strokeStyle = `rgba(199, 120, 221, ${0.3 - distance / 400})`
+          ctx.strokeStyle = `rgba(199, 120, 221, ${0.6 - distance / 400})`; // Increased base opacity from 0.3 to 0.6
           ctx.lineWidth = 0.5
           ctx.moveTo(particle.x, particle.y)
           ctx.lineTo(mousePosition.current.x, mousePosition.current.y)
