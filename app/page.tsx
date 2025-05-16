@@ -104,6 +104,16 @@ export default function Home() {
   const [showSearchResult, setShowSearchResult] = useState(false)
   const [showSearchResponse, setShowSearchResponse] = useState(false)
   const dropZoneRef = useRef<HTMLDivElement>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const imageRef = useRef<HTMLDivElement>(null);
+  const [heroImageSrc, setHeroImageSrc] = useState("/images/dp.png");
+  const [isSparkle, setIsSparkle] = useState(false);
+  const [isMagicTransition, setIsMagicTransition] = useState(false);
+  const [showBlushPopup, setShowBlushPopup] = useState(false);
+  const clickCountRef = useRef(0);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev)
@@ -267,6 +277,44 @@ export default function Home() {
     setSkillDropped(true)
   }
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    
+    // Calculate mouse position relative to center (only X axis)
+    const x = e.clientX - centerX;
+    
+    // Calculate rotation angle (max 45 degrees, only Y axis)
+    const rotateY = (x / (rect.width / 2)) * 45;
+    
+    setMousePosition({ x: 0, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 });
+  };
+
+  const handleHeroImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    setIsSparkle(true);
+    setTimeout(() => setIsSparkle(false), 700);
+    if (e.detail === 3) {
+      setIsFadingOut(true);
+      setTimeout(() => {
+        setHeroImageSrc("/images/Wink.png");
+        setIsFadingOut(false);
+        setShowBlushPopup(true);
+        // Play music
+        if (!audioRef.current) {
+          audioRef.current = new Audio('/music/blush.mp3');
+        }
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+      }, 500);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1e2124] text-foreground font-mono relative">
       {/* Interactive Background */}
@@ -280,10 +328,10 @@ export default function Home() {
 
       {/* Left sidebar icons */}
       <div className="fixed left-4 top-1/3 hidden lg:flex flex-col gap-4 z-50">
-        <Link href="#" aria-label="Github">
+        <Link href="https://github.com/7sohamd" aria-label="Github">
           <Github className="w-5 h-5 text-gray-400 hover:text-white transition" />
         </Link>
-        <Link href="#" aria-label="Projects">
+        <Link href="https://github.com/7sohamd/portfolio" aria-label="Projects">
           <FileCode className="w-5 h-5 text-gray-400 hover:text-white transition" />
         </Link>
       </div>
@@ -363,7 +411,7 @@ export default function Home() {
             </p>
             {showSearchResponse && (
               <p className="text-gray-400 mt-2">
-                Google said,<span className="text-purple-400"> ‘Try Bing, I don’t handle lost causes.’</span>
+                Google said,<span className="text-purple-400"> 'Try Bing, I don't handle lost causes.'</span>
               </p>
             )}
             <a
@@ -375,20 +423,40 @@ export default function Home() {
             </a>
           </Draggable>
           <div className="relative">
-            <Draggable id="hero-image" className="relative z-10" onDragStart={handleDragStart}>
-              <Image
-                src="/placeholder.svg?height=500&width=400"
-                alt="Developer portrait"
-                width={400}
-                height={500}
-                className="mx-auto"
-              />
-            </Draggable>
+            <div 
+              ref={imageRef}
+              className="relative group [perspective:1000px]"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              {/* Popup blush text (persistent) */}
+              {showBlushPopup && (
+                <span className="popup-blush">damn! you made me blush</span>
+              )}
+              <div 
+                className="relative transition-all duration-300 ease-out [transform-style:preserve-3d]"
+                style={{
+                  transform: `rotateY(${mousePosition.y}deg)`
+                }}
+              >
+                {/* Glow wrapper for PNG edge sparkle */}
+                <div className={`${isSparkle ? 'hero-sparkle-glow' : ''} ${isFadingOut ? 'hero-fade-magic' : ''}`}> 
+                  <Image
+                    src={heroImageSrc}
+                    alt="Developer portrait"
+                    width={300}
+                    height={300}
+                    className={`mx-auto cursor-pointer`}
+                    onClick={handleHeroImageClick}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Currently working on badge - styled exactly as in reference */}
             <Draggable
               id="currently-working"
-              className="absolute bottom-[5%] left-[10%] bg-[#232529] border-l-2 border-purple-500 py-2 px-4 z-20"
+              className="absolute bottom-[20%] left-[10%] bg-[#232529] border-l-2 border-purple-500 py-2 px-4 z-20"
               onDragStart={handleDragStart}
             >
               <p className="text-xs text-purple-400">Currently working on</p>
@@ -397,7 +465,23 @@ export default function Home() {
           </div>
         </section>
 
-        
+        {/* Decorative graphics for hero section */}
+        <div aria-hidden="true" className="pointer-events-none select-none">
+          <Image
+            src="/images/graphic1.png"
+            alt="Floating graphic 1"
+            width={120}
+            height={120}
+            className="absolute top-10 left-10 opacity-40 floating-slow"
+          />
+          <Image
+            src="/images/dots-grid.png"
+            alt="Static dots grid accent"
+            width={120}
+            height={80}
+            className="absolute top-10 right-10 opacity-20"
+          />
+        </div>
 
         {/* Quote Section - styled exactly as in reference */}
         <section className="py-16 flex justify-center">
@@ -413,6 +497,29 @@ export default function Home() {
 
         {/* Projects Section */}
         <section id="projects" className="py-16 relative">
+          <div aria-hidden="true" className="pointer-events-none select-none">
+            <Image
+              src="/images/graphic2.png"
+              alt="Floating graphic 2"
+              width={100}
+              height={100}
+              className="absolute top-0 right-10 opacity-40 floating-slow-reverse"
+            />
+            <Image
+              src="/images/rectangle.png"
+              alt="Floating rectangle"
+              width={80}
+              height={80}
+              className="absolute bottom-10 left-10 opacity-30 floating-slow"
+            />
+            <Image
+              src="/images/dots-grid.png"
+              alt="Static dots grid accent"
+              width={100}
+              height={60}
+              className="absolute bottom-0 right-0 opacity-20"
+            />
+          </div>
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold section-title">
               <span className="text-purple-400">#</span>projects
@@ -462,7 +569,9 @@ export default function Home() {
                 <h3 className="text-xl mb-2">LifeSyncHub</h3>
                 <p className="text-sm text-gray-400 mb-4">Healthcare app with ML disease prediction</p>
                 <div className="flex gap-2">
-                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                    onClick={() => window.open('https://github.com/7sohamd/VideoCall', '_blank')}
+                  >
                     GitHub <span>↗</span>
                   </button>
                 </div>
@@ -494,7 +603,9 @@ export default function Home() {
                 <h3 className="text-xl mb-2">Hackwarness</h3>
                 <p className="text-sm text-gray-400 mb-4">Cybersecurity awareness game with adaptive ML tools</p>
                 <div className="flex gap-2">
-                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                    onClick={() => window.open('https://github.com/7sohamd/Avenir', '_blank')}
+                  >
                     GitHub <span>↗</span>
                   </button>
                 </div>
@@ -526,7 +637,9 @@ export default function Home() {
                   Blockchain-based women's safety app with hidden camera detection
                 </p>
                 <div className="flex gap-2">
-                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                  <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                    onClick={() => window.open('https://github.com/AayushKP/KAWACH', '_blank')}
+                  >
                     GitHub <span>↗</span>
                   </button>
                 </div>
@@ -591,7 +704,9 @@ export default function Home() {
                   <h3 className="text-xl mb-2">Agneepath</h3>
                   <p className="text-sm text-gray-400 mb-4">AR-based railway navigation with AI grievance support</p>
                   <div className="flex gap-2">
-                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                      onClick={() => window.open('https://1drv.ms/p/c/995ced1584e46218/ERhi5IQV7VwggJmhAQAAAAABZYhMUkHUIJrU8pthnFsRKg?e=PTr74c', '_blank')}
+                    >
                       Demo <span>↗</span>
                     </button>
                   </div>
@@ -623,7 +738,9 @@ export default function Home() {
                     Facial movement + hand gesture based gaming control system
                   </p>
                   <div className="flex gap-2">
-                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                      onClick={() => window.open('https://github.com/7sohamd/NoKeyBoardGaming', '_blank')}
+                    >
                       GitHub <span>↗</span>
                     </button>
                   </div>
@@ -653,7 +770,9 @@ export default function Home() {
                   <h3 className="text-xl mb-2">Emotion Recognise</h3>
                   <p className="text-sm text-gray-400 mb-4">ML-based emotion recognition from facial input</p>
                   <div className="flex gap-2">
-                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                      onClick={() => window.open('https://github.com/7sohamd/Emotion-Recognise', '_blank')}
+                    >
                       GitHub <span>↗</span>
                     </button>
                   </div>
@@ -685,7 +804,9 @@ export default function Home() {
                     Chrome extension to track time spent on tabs and summarize content
                   </p>
                   <div className="flex gap-2">
-                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1">
+                    <button className="bg-transparent hover:bg-gray-800 text-white text-xs border border-gray-700 px-3 py-1 transition flex items-center gap-1"
+                      onClick={() => window.open('https://github.com/7sohamd/TabTracker', '_blank')}
+                    >
                       GitHub <span>↗</span>
                     </button>
                   </div>
@@ -828,6 +949,22 @@ export default function Home() {
         </section>
         {/* About Me Section */}
         <section id="about-me" className="py-16 relative">
+          <div aria-hidden="true" className="pointer-events-none select-none">
+            <Image
+              src="/images/dots-grid-small.png"
+              alt="Small dots grid accent"
+              width={80}
+              height={80}
+              className="absolute bottom-0 right-0 opacity-20 floating-slow"
+            />
+            <Image
+              src="/images/graphic2.png"
+              alt="Floating graphic 2"
+              width={80}
+              height={80}
+              className="absolute top-0 left-10 opacity-30 floating-slow-reverse"
+            />
+          </div>
           <h2 className="text-2xl font-bold section-title mb-8">
             <span className="text-purple-400">#</span>about-me
           </h2>
@@ -961,6 +1098,29 @@ export default function Home() {
 
         {/* Contacts Section */}
         <section id="contacts" className="py-16 relative">
+          <div aria-hidden="true" className="pointer-events-none select-none">
+            <Image
+              src="/images/rectangle.png"
+              alt="Floating rectangle"
+              width={60}
+              height={60}
+              className="absolute top-0 left-1/2 opacity-20 floating-slow"
+            />
+            <Image
+              src="/images/dots-grid-small.png"
+              alt="Small dots grid accent"
+              width={60}
+              height={60}
+              className="absolute bottom-0 left-0 opacity-20"
+            />
+            <Image
+              src="/images/graphic1.png"
+              alt="Floating graphic 1"
+              width={60}
+              height={60}
+              className="absolute bottom-10 right-10 opacity-20 floating-slow-reverse"
+            />
+          </div>
           <h2 className="text-2xl font-bold section-title mb-8">
             <span className="text-purple-400">#</span>contacts
           </h2>

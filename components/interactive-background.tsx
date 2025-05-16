@@ -19,26 +19,31 @@ interface TechIcon {
   speedY: number
   rotation: number
   rotationSpeed: number
-  icon: string
+  icon: string // emoji or logo path
   opacity: number
+  isLogo?: boolean // true if logo, false if emoji
+  imageObj?: HTMLImageElement // for logos
 }
 
-const techIcons = [
-  "⚛️", // React
-  "🟢", // Node
-  "🔥", // Firebase
-  "🐍", // Python
-  "☕", // Java
-  "🅰️", // Angular
-  "🟦", // TypeScript
+const logoPaths = [
+  "/logos/mongo.png",
+  "/logos/mysql.png",
+  "/logos/new-php-logo.svg",
+  "/logos/typecript.png",
+  "/logos/angular.png",
+  "/logos/java.png",
+  "/logos/python.png",
+  "/logos/firebase.png",
+  "/logos/pngwing.com.png",
+  "/logos/React.png",
+];
+
+const techEmojis = [
   "💻", // Code
   "🖥️", // Computer
   "📱", // Mobile
   "🚀", // Deployment
   "🔷", // GraphQL
-  "🐘", // PHP
-  "🐬", // MySQL
-  "🍃", // MongoDB
 ]
 
 export function InteractiveBackground() {
@@ -47,6 +52,7 @@ export function InteractiveBackground() {
   const particles = useRef<Particle[]>([])
   const techIconsRef = useRef<TechIcon[]>([])
   const animationFrameId = useRef<number>(0)
+  const logoImagesRef = useRef<{ [src: string]: HTMLImageElement }>({})
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -84,22 +90,50 @@ export function InteractiveBackground() {
     // Initialize tech icons
     const initTechIcons = () => {
       techIconsRef.current = []
-      const iconCount = Math.floor((canvas.width * canvas.height) / 70000) // Fewer icons than particles
-
+      const iconCount = Math.floor((canvas.width * canvas.height) / 70000)
       for (let i = 0; i < iconCount; i++) {
-        techIconsRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 15 + 15, // Size between 15-30px
-          speedX: Math.random() * 0.3 - 0.15,
-          speedY: Math.random() * 0.3 - 0.15,
-          rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() * 0.5 - 0.25) * 0.5,
-          icon: techIcons[Math.floor(Math.random() * techIcons.length)],
-          opacity: Math.random() * 0.2 + 0.3, // Increased opacity range
-        })
+        // Randomly decide: emoji or logo
+        const useLogo = Math.random() < 0.5 && logoPaths.length > 0
+        if (useLogo) {
+          const logoPath = logoPaths[Math.floor(Math.random() * logoPaths.length)]
+          techIconsRef.current.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 15 + 15,
+            speedX: Math.random() * 0.3 - 0.15,
+            speedY: Math.random() * 0.3 - 0.15,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() * 0.5 - 0.25) * 0.5,
+            icon: logoPath,
+            opacity: Math.random() * 0.2 + 0.3,
+            isLogo: true,
+            imageObj: logoImagesRef.current[logoPath],
+          })
+        } else {
+          techIconsRef.current.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 15 + 15,
+            speedX: Math.random() * 0.3 - 0.15,
+            speedY: Math.random() * 0.3 - 0.15,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() * 0.5 - 0.25) * 0.5,
+            icon: techEmojis[Math.floor(Math.random() * techEmojis.length)],
+            opacity: Math.random() * 0.2 + 0.3,
+            isLogo: false,
+          })
+        }
       }
     }
+
+    // Preload all logo images
+    logoPaths.forEach((src) => {
+      if (!logoImagesRef.current[src]) {
+        const img = new window.Image()
+        img.src = src
+        logoImagesRef.current[src] = img
+      }
+    })
 
     // Animation loop
     const animate = () => {
@@ -111,10 +145,14 @@ export function InteractiveBackground() {
         ctx.translate(icon.x, icon.y)
         ctx.rotate((icon.rotation * Math.PI) / 180)
         ctx.globalAlpha = icon.opacity
-        ctx.font = `${icon.size}px Arial`
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.fillText(icon.icon, 0, 0)
+        if (icon.isLogo && icon.imageObj && icon.imageObj.complete) {
+          ctx.drawImage(icon.imageObj, -icon.size / 2, -icon.size / 2, icon.size, icon.size)
+        } else if (!icon.isLogo) {
+          ctx.font = `${icon.size}px Arial`
+          ctx.textAlign = "center"
+          ctx.textBaseline = "middle"
+          ctx.fillText(icon.icon, 0, 0)
+        }
         ctx.restore()
 
         // Update position

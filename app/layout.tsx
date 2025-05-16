@@ -10,8 +10,8 @@ const firaCode = Fira_Code({
 })
 
 export const metadata: Metadata = {
-  title: "Elias - Web Designer & Front-end Developer",
-  description: "Portfolio website for Elias, a web designer and front-end developer",
+  title: "Soham Dey - Portfolio",
+  description: "Portfolio website for Soham",
     generator: 'v0.dev'
 }
 

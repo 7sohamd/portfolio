@@ -190,8 +190,105 @@ a:hover {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Add perspective to the parent container */
+.perspective {
+  perspective: 1000px;
+}
+
+/* Rotate the image on hover */
+.group:hover .group-hover\:rotate-y-\[15deg\] {
+  transform: rotateY(15deg);
+}
+
+/* Custom 3D rotation styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-visible {
+  backface-visibility: visible;
+}
+
+.rotate-y-45 {
+  transform: rotateY(45deg);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@keyframes float-slow {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-20px) scale(1.03) rotate(2deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+
+.floating-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.floating-slow-reverse {
+  animation: float-slow 10s ease-in-out infinite reverse;
+}
+
+@keyframes hero-sparkle {
+  0% { box-shadow: 0 0 0 0 rgba(199,120,221,0.7), 0 0 0 0 rgba(255,255,255,0.5); transform: scale(1); }
+  40% { box-shadow: 0 0 40px 10px rgba(199,120,221,0.7), 0 0 80px 20px rgba(255,255,255,0.5); transform: scale(1.08) rotate(-2deg); }
+  60% { box-shadow: 0 0 30px 5px rgba(199,120,221,0.5), 0 0 60px 10px rgba(255,255,255,0.3); transform: scale(0.98) rotate(2deg); }
+  100% { box-shadow: 0 0 0 0 rgba(199,120,221,0), 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
+}
+.hero-sparkle {
+  animation: hero-sparkle 0.7s cubic-bezier(.4,2,.6,1) both;
+}
+
+@keyframes hero-fade-magic {
+  0% { opacity: 1; filter: blur(0px); transform: scale(1); }
+  40% { opacity: 0; filter: blur(8px); transform: scale(1.2) rotate(-8deg); }
+  60% { opacity: 0; filter: blur(8px); transform: scale(0.8) rotate(8deg); }
+  100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+}
+.hero-fade-magic {
+  animation: hero-fade-magic 1s cubic-bezier(.4,2,.6,1);
+}
+
+@keyframes popup-blush-in {
+  0% { opacity: 0; transform: translateY(20px) scale(0.8) rotate(-2deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+.popup-blush {
+  animation: popup-blush-in 0.7s cubic-bezier(.4,2,.6,1) 1;
+  pointer-events: none;
+  position: absolute;
+  right: 0.5rem;
+  top: -2.5rem;
+  background: rgba(199,120,221,0.9);
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 1.5rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  z-index: 50;
+  box-shadow: 0 4px 24px 0 rgba(199,120,221,0.2);
+  letter-spacing: 0.03em;
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(0deg);
+}
+
+.hero-sparkle-glow {
+  filter:
+    drop-shadow(0 0 0px #c778dd)
+    drop-shadow(0 0 16px #c778dd)
+    drop-shadow(0 0 32px #fff)
+    drop-shadow(0 0 48px #c778dd);
+  transition: filter 0.4s cubic-bezier(.4,2,.6,1);
 }
