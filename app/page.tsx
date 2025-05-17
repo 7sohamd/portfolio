@@ -390,12 +390,12 @@ export default function Home() {
         {/* Hero Section */}
         <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 items-center">
           <Draggable id="hero-text" className="space-y-6" onDragStart={handleDragStart}>
-            <h1 className="text-3xl md:text-4xl font-bold hero-text">
+            <h1 className="text-5xl md:text-7xl font-extrabold hero-text leading-tight">
               Soham is a <span className="text-purple-400">Software Engineer</span> and
               <br />
               <span className="text-purple-400">Full Stack Developer</span>
             </h1>
-            <p className="text-gray-400">
+            <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
               and makes flop horror games using unity, btw..
               <br />
               <span className="flex items-center gap-2">
@@ -410,20 +410,20 @@ export default function Home() {
               </span>
             </p>
             {showSearchResponse && (
-              <p className="text-gray-400 mt-2">
+              <p className="text-lg md:text-xl text-gray-400 mt-2">
                 Google said,<span className="text-purple-400"> 'Try Bing, I don't handle lost causes.'</span>
               </p>
             )}
             <a
               href="/Modern_Simple_ATS_Friendly_LateX_resume.pdf"
               download="Soham_Dey_CV.pdf"
-              className="bg-transparent hover:bg-purple-900/30 text-white border border-purple-500 px-4 py-2 transition mt-4 inline-block"
+              className="bg-transparent hover:bg-purple-900/30 text-white border border-purple-500 px-6 py-3 text-lg transition mt-4 inline-block"
             >
               Download CV
             </a>
           </Draggable>
           <div className="relative">
-            <div 
+            <div
               ref={imageRef}
               className="relative group [perspective:1000px]"
               onMouseMove={handleMouseMove}
@@ -433,14 +433,18 @@ export default function Home() {
               {showBlushPopup && (
                 <span className="popup-blush">damn! you made me blush</span>
               )}
-              <div 
+              <div
                 className="relative transition-all duration-300 ease-out [transform-style:preserve-3d]"
                 style={{
-                  transform: `rotateY(${mousePosition.y}deg)`
+                  transform: `rotateY(${mousePosition.y}deg)`,
                 }}
               >
                 {/* Glow wrapper for PNG edge sparkle */}
-                <div className={`${isSparkle ? 'hero-sparkle-glow' : ''} ${isFadingOut ? 'hero-fade-magic' : ''}`}> 
+                <div
+                  className={`${
+                    isSparkle ? "hero-sparkle-glow" : ""
+                  } ${isFadingOut ? "hero-fade-magic" : ""}`}
+                >
                   <Image
                     src={heroImageSrc}
                     alt="Developer portrait"
@@ -453,7 +457,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Currently working on badge - styled exactly as in reference */}
+            {/* Currently working on badge */}
             <Draggable
               id="currently-working"
               className="absolute bottom-[20%] left-[10%] bg-[#232529] border-l-2 border-purple-500 py-2 px-4 z-20"
