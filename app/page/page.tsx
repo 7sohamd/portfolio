@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic';
 import { DropZone } from "@/components/drop-zone";
 import { CustomCursor } from "@/components/custom-cursor";
 import FadeIn from "@/components/fade-in";
-import ThemeToggle from "../components/ThemeToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // Change the dynamic import to include type
 const AnimatedText = dynamic<{
@@ -23,7 +23,7 @@ const AnimatedText = dynamic<{
   wordDelay?: number;
   highlightWords?: string[];
   highlightClassName?: string;
-}>(() => import("./components/AnimatedText"), { 
+}>(() => import("../components/AnimatedText"), { 
   ssr: false,
   loading: () => <div className="text-5xl md:text-7xl font-extrabold">Loading...</div>
 });

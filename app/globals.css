@@ -297,6 +297,26 @@ a:hover {
   animation: float-fast 2s ease-in-out infinite;
 }
 
+/* Floating animation */
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Keyframes for floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Glow effect adjustments */
+.blur-2xl {
+  filter: blur(20px); /* Increased feathering for a softer glow */
+}
+
 @keyframes hero-sparkle {
   0% { box-shadow: 0 0 0 0 rgba(199,120,221,0.7), 0 0 0 0 rgba(255,255,255,0.5); transform: scale(1); }
   40% { box-shadow: 0 0 40px 10px rgba(199,120,221,0.7), 0 0 80px 20px rgba(255,255,255,0.5); transform: scale(1.08) rotate(-2deg); }

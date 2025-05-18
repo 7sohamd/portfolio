@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 import { DropZone } from "@/components/drop-zone";
 import { CustomCursor } from "@/components/custom-cursor";
 import FadeIn from "@/components/fade-in";
+import ThemeToggle from "@/components/ThemeToggle"; // Adjust the path if necessary
 
 // Change the dynamic import to include type
 const AnimatedText = dynamic<{
@@ -22,7 +23,7 @@ const AnimatedText = dynamic<{
   wordDelay?: number;
   highlightWords?: string[];
   highlightClassName?: string;
-}>(() => import("./components/AnimatedText"), { 
+}>(() => import("../components/AnimatedText"), { 
   ssr: false,
   loading: () => <div className="text-5xl md:text-7xl font-extrabold">Loading...</div>
 });
@@ -100,12 +101,8 @@ export default function HomeLight() {
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    window.location.href = isDarkMode ? '/light' : '/';
-  };
+
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -280,14 +277,7 @@ export default function HomeLight() {
               <Link href="#contacts" className="text-gray-600 hover:text-gray-900 transition">
                 #contacts
               </Link>
-              <button
-                onClick={toggleTheme}
-                className="text-gray-600 hover:text-gray-900 transition flex items-center gap-1"
-                aria-label="Toggle theme"
-              >
-                <Moon className="w-5 h-5" />
-                <span className="text-sm">Dark Mode</span>
-              </button>
+              
               <div className="relative">
                 <button
                   onClick={toggleDropdown}
@@ -319,6 +309,9 @@ export default function HomeLight() {
 
       <main className="container mx-auto px-4 relative z-10">
         {/* Hero Section */}
+        <div className="absolute top-10 left-10 z-50"> {/* Positioned absolutely */}
+            <ThemeToggle />
+        </div>
         <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 items-center">
           <Draggable id="hero-text" className="space-y-6" onDragStart={handleDragStart}>
             <h1 className="text-5xl md:text-7xl font-extrabold hero-text leading-tight">
@@ -423,21 +416,21 @@ export default function HomeLight() {
 
         {/* Decorative graphics for hero section */}
         <div aria-hidden="true" className="pointer-events-none select-none">
-          <Image
-            src="/images/graphic1.png"
-            alt="Floating graphic 1"
-            width={120}
-            height={120}
-            className="absolute top-10 left-10 opacity-20 floating-slow"
-          />
-          <Image
-            src="/images/dots-grid.png"
-            alt="Static dots grid accent"
-            width={120}
-            height={80}
-            className="absolute top-10 right-10 opacity-10"
-          />
-        </div>
+                  <Image
+                    src="/images/graphic1.png"
+                    alt="Floating graphic 1"
+                    width={120}
+                    height={120}
+                    className="absolute top-[300px] left-[5px] opacity-40 floating-slow z-[-1]" // Adjusted left from 50px to 20px
+                  />
+                  <Image
+                    src="/images/dots-grid.png"
+                    alt="Static dots grid accent"
+                    width={120}
+                    height={80}
+                    className="absolute top-10 right-10 opacity-20"
+                  />
+                </div>
 
         {/* Quote Section */}
         <FadeIn>
