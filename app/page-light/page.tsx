@@ -350,7 +350,7 @@ export default function HomeLight() {
             <FadeIn delay={2500}>
               <a
                 href="/Modern_Simple_ATS_Friendly_LateX_resume.pdf"
-                download="Soham_Dey_CV.pdf"
+                download="/soham_resume_latest.pdf"
                 className="bg-transparent hover:bg-purple-100 text-gray-900 border border-purple-500 px-6 py-3 text-lg transition mt-4 inline-block"
               >
                 Download CV
